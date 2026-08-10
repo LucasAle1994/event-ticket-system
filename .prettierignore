@@ -1,0 +1,8 @@
+.next
+node_modules
+generated
+coverage
+package-lock.json
+.ia
+docs
+README.md
