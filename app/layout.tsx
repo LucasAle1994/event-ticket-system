@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Event Ticket System",
-  description: "Event registration and QR ticket management platform.",
+  title: "El Arte de Criar | Taller para familias",
+  description:
+    "Un encuentro para acompañar a tus hijos en tiempos de pantallas y algoritmos.",
 };
 
 interface RootLayoutProperties {
@@ -14,7 +15,7 @@ interface RootLayoutProperties {
 
 export default function RootLayout({ children }: RootLayoutProperties) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body>{children}</body>
     </html>
   );

@@ -4,5 +4,6 @@ generated
 coverage
 package-lock.json
 .ia
+.ai
 docs
 README.md
