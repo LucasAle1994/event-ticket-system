@@ -4,6 +4,7 @@ import { participantSchema } from "@/features/participants/participant-schema";
 import {
   createParticipant,
   DuplicateParticipantError,
+  sendParticipantTelegramNotification,
 } from "@/features/participants/participant-service";
 
 export async function POST(request: Request) {
@@ -20,7 +21,13 @@ export async function POST(request: Request) {
       );
     }
 
-    await createParticipant(data.data);
+    const participant = await createParticipant(data.data);
+
+    try {
+      await sendParticipantTelegramNotification(participant);
+    } catch (error) {
+      console.error("Telegram notification failed:", error);
+    }
 
     return NextResponse.json(
       {
