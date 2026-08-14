@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 const COOKIE_NAME = "event_admin_session";
-const DEFAULT_MAX_AGE = 60 * 60 * 8; // 8 hours
+const DEFAULT_MAX_AGE = 60 * 60 * 1; // 1 hours
 
 function getSecret(): string {
   const s = process.env.ADMIN_SESSION_SECRET;
