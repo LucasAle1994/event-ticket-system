@@ -240,6 +240,7 @@ export type ParticipantWhereInput = {
   address?: Prisma.StringFilter<"Participant"> | string
   birthDate?: Prisma.DateTimeFilter<"Participant"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
+  ticket?: Prisma.XOR<Prisma.TicketNullableScalarRelationFilter, Prisma.TicketWhereInput> | null
 }
 
 export type ParticipantOrderByWithRelationInput = {
@@ -251,6 +252,7 @@ export type ParticipantOrderByWithRelationInput = {
   address?: Prisma.SortOrder
   birthDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  ticket?: Prisma.TicketOrderByWithRelationInput
 }
 
 export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
@@ -265,6 +267,7 @@ export type ParticipantWhereUniqueInput = Prisma.AtLeast<{
   address?: Prisma.StringFilter<"Participant"> | string
   birthDate?: Prisma.DateTimeFilter<"Participant"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Participant"> | Date | string
+  ticket?: Prisma.XOR<Prisma.TicketNullableScalarRelationFilter, Prisma.TicketWhereInput> | null
 }, "id" | "uuid" | "email">
 
 export type ParticipantOrderByWithAggregationInput = {
@@ -305,6 +308,7 @@ export type ParticipantCreateInput = {
   address: string
   birthDate: Date | string
   createdAt?: Date | string
+  ticket?: Prisma.TicketCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUncheckedCreateInput = {
@@ -316,6 +320,7 @@ export type ParticipantUncheckedCreateInput = {
   address: string
   birthDate: Date | string
   createdAt?: Date | string
+  ticket?: Prisma.TicketUncheckedCreateNestedOneWithoutParticipantInput
 }
 
 export type ParticipantUpdateInput = {
@@ -326,6 +331,7 @@ export type ParticipantUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   birthDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ticket?: Prisma.TicketUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantUncheckedUpdateInput = {
@@ -337,6 +343,7 @@ export type ParticipantUncheckedUpdateInput = {
   address?: Prisma.StringFieldUpdateOperationsInput | string
   birthDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ticket?: Prisma.TicketUncheckedUpdateOneWithoutParticipantNestedInput
 }
 
 export type ParticipantCreateManyInput = {
@@ -412,6 +419,11 @@ export type ParticipantSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type ParticipantScalarRelationFilter = {
+  is?: Prisma.ParticipantWhereInput
+  isNot?: Prisma.ParticipantWhereInput
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -428,6 +440,78 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type ParticipantCreateNestedOneWithoutTicketInput = {
+  create?: Prisma.XOR<Prisma.ParticipantCreateWithoutTicketInput, Prisma.ParticipantUncheckedCreateWithoutTicketInput>
+  connectOrCreate?: Prisma.ParticipantCreateOrConnectWithoutTicketInput
+  connect?: Prisma.ParticipantWhereUniqueInput
+}
+
+export type ParticipantUpdateOneRequiredWithoutTicketNestedInput = {
+  create?: Prisma.XOR<Prisma.ParticipantCreateWithoutTicketInput, Prisma.ParticipantUncheckedCreateWithoutTicketInput>
+  connectOrCreate?: Prisma.ParticipantCreateOrConnectWithoutTicketInput
+  upsert?: Prisma.ParticipantUpsertWithoutTicketInput
+  connect?: Prisma.ParticipantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ParticipantUpdateToOneWithWhereWithoutTicketInput, Prisma.ParticipantUpdateWithoutTicketInput>, Prisma.ParticipantUncheckedUpdateWithoutTicketInput>
+}
+
+export type ParticipantCreateWithoutTicketInput = {
+  uuid?: string
+  fullName: string
+  email: string
+  phone: string
+  address: string
+  birthDate: Date | string
+  createdAt?: Date | string
+}
+
+export type ParticipantUncheckedCreateWithoutTicketInput = {
+  id?: number
+  uuid?: string
+  fullName: string
+  email: string
+  phone: string
+  address: string
+  birthDate: Date | string
+  createdAt?: Date | string
+}
+
+export type ParticipantCreateOrConnectWithoutTicketInput = {
+  where: Prisma.ParticipantWhereUniqueInput
+  create: Prisma.XOR<Prisma.ParticipantCreateWithoutTicketInput, Prisma.ParticipantUncheckedCreateWithoutTicketInput>
+}
+
+export type ParticipantUpsertWithoutTicketInput = {
+  update: Prisma.XOR<Prisma.ParticipantUpdateWithoutTicketInput, Prisma.ParticipantUncheckedUpdateWithoutTicketInput>
+  create: Prisma.XOR<Prisma.ParticipantCreateWithoutTicketInput, Prisma.ParticipantUncheckedCreateWithoutTicketInput>
+  where?: Prisma.ParticipantWhereInput
+}
+
+export type ParticipantUpdateToOneWithWhereWithoutTicketInput = {
+  where?: Prisma.ParticipantWhereInput
+  data: Prisma.XOR<Prisma.ParticipantUpdateWithoutTicketInput, Prisma.ParticipantUncheckedUpdateWithoutTicketInput>
+}
+
+export type ParticipantUpdateWithoutTicketInput = {
+  uuid?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  birthDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ParticipantUncheckedUpdateWithoutTicketInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  uuid?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  birthDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type ParticipantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -439,6 +523,7 @@ export type ParticipantSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   address?: boolean
   birthDate?: boolean
   createdAt?: boolean
+  ticket?: boolean | Prisma.Participant$ticketArgs<ExtArgs>
 }, ExtArgs["result"]["participant"]>
 
 export type ParticipantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -475,10 +560,17 @@ export type ParticipantSelectScalar = {
 }
 
 export type ParticipantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uuid" | "fullName" | "email" | "phone" | "address" | "birthDate" | "createdAt", ExtArgs["result"]["participant"]>
+export type ParticipantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ticket?: boolean | Prisma.Participant$ticketArgs<ExtArgs>
+}
+export type ParticipantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ParticipantIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $ParticipantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Participant"
-  objects: {}
+  objects: {
+    ticket: Prisma.$TicketPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     uuid: string
@@ -882,6 +974,7 @@ readonly fields: ParticipantFieldRefs;
  */
 export interface Prisma__ParticipantClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ticket<T extends Prisma.Participant$ticketArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Participant$ticketArgs<ExtArgs>>): Prisma.Prisma__TicketClient<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -936,6 +1029,10 @@ export type ParticipantFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * Filter, which Participant to fetch.
    */
   where: Prisma.ParticipantWhereUniqueInput
@@ -954,6 +1051,10 @@ export type ParticipantFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * Filter, which Participant to fetch.
    */
   where: Prisma.ParticipantWhereUniqueInput
@@ -971,6 +1072,10 @@ export type ParticipantFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the Participant
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
   /**
    * Filter, which Participant to fetch.
    */
@@ -1020,6 +1125,10 @@ export type ParticipantFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * Filter, which Participant to fetch.
    */
   where?: Prisma.ParticipantWhereInput
@@ -1067,6 +1176,10 @@ export type ParticipantFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the Participant
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
   /**
    * Filter, which Participants to fetch.
    */
@@ -1116,6 +1229,10 @@ export type ParticipantCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * The data needed to create a Participant.
    */
   data: Prisma.XOR<Prisma.ParticipantCreateInput, Prisma.ParticipantUncheckedCreateInput>
@@ -1163,6 +1280,10 @@ export type ParticipantUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Participant
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
   /**
    * The data needed to update a Participant.
    */
@@ -1230,6 +1351,10 @@ export type ParticipantUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * The filter to search for the Participant to update in case it exists.
    */
   where: Prisma.ParticipantWhereUniqueInput
@@ -1256,6 +1381,10 @@ export type ParticipantDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
+  /**
    * Filter which Participant to delete.
    */
   where: Prisma.ParticipantWhereUniqueInput
@@ -1276,6 +1405,25 @@ export type ParticipantDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * Participant.ticket
+ */
+export type Participant$ticketArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Ticket
+   */
+  select?: Prisma.TicketSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Ticket
+   */
+  omit?: Prisma.TicketOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TicketInclude<ExtArgs> | null
+  where?: Prisma.TicketWhereInput
+}
+
+/**
  * Participant without action
  */
 export type ParticipantDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1287,4 +1435,8 @@ export type ParticipantDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the Participant
    */
   omit?: Prisma.ParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParticipantInclude<ExtArgs> | null
 }

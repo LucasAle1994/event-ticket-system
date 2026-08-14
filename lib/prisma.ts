@@ -7,6 +7,10 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 const databaseUrl = process.env.DATABASE_URL;
+console.log(
+  "[PRISMA DEBUG] DB:",
+  databaseUrl?.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:***@"),
+);
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not defined. Configure the PostgreSQL connection in the environment.");
