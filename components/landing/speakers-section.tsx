@@ -10,8 +10,8 @@ function SpeakersSection() {
       className="bg-muted/40 py-20 sm:py-24 lg:py-20"
     >
       <SectionHeading
-        eyebrow="Disertante"
-        title="Conocé a la disertante"
+        eyebrow="Invitada especial"
+        title="Conocé a nuestra invitada"
         description="Una mirada cercana, con experiencia y respeto por cada historia familiar."
       />
       <div className="mt-10 sm:mt-12">

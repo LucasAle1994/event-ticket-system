@@ -9,4 +9,5 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Participant'
+export type * from './models/Ticket'
 export type * from './commonInputTypes'

@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum TicketStatus {
+  GENERATED
+  SENT
+}
+
 model Participant {
   id        Int      @id @default(autoincrement())
   uuid      String   @unique @default(uuid())
@@ -16,4 +21,17 @@ model Participant {
   address   String
   birthDate DateTime
   createdAt DateTime @default(now()) @db.Timestamptz(3)
+  ticket    Ticket?
+}
+
+model Ticket {
+  id         Int          @id @default(autoincrement())
+  uuid       String       @unique @default(uuid())
+  participant Participant  @relation(fields: [participantId], references: [id])
+  participantId Int        @unique
+  status     TicketStatus @default(GENERATED)
+  whatsappUrl String?
+  pdfBase64  String?
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime     @updatedAt @db.Timestamptz(3)
 }

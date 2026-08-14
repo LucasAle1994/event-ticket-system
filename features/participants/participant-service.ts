@@ -39,6 +39,15 @@ export async function listParticipants() {
       address: true,
       birthDate: true,
       createdAt: true,
+      ticket: {
+        select: {
+          id: true,
+          uuid: true,
+          status: true,
+          whatsappUrl: true,
+          pdfBase64: true,
+        },
+      },
     },
   });
 }
