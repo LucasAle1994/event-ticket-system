@@ -133,7 +133,7 @@ function svgTextForName(name: string, width: number, height: number) {
 
   // Try progressively smaller sizes; keep a small minimum for very long names
   while (fontSize > 8) {
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Poppins, Arial, Helvetica, sans-serif; font-size: ${fontSize}px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Arial, Helvetica, sans-serif; font-size: ${fontSize}px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
     // Rough width check by character count; using 0.55 multiplier allows slightly larger font sizes
     if (name.length * fontSize * 0.55 < width) {
       return svg;
@@ -141,7 +141,7 @@ function svgTextForName(name: string, width: number, height: number) {
     fontSize -= 2;
   }
 
-  return `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Poppins, Arial, Helvetica, sans-serif; font-size: 10px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
+  return `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
 }
 
 export async function generateTicketImage(participant: {
