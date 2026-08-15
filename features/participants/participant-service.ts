@@ -64,6 +64,13 @@ export async function createParticipant(input: ParticipantFormValues) {
     throw new DuplicateParticipantError();
   }
 
+  // Convertir YYYY-MM-DD de forma determinística
+  const [year, month, day] = parsed.birthDate.split("-").map(Number);
+
+  const birthDate = new Date(
+    Date.UTC(year, month - 1, day),
+  );
+
   try {
     return await prisma.participant.create({
       data: {
@@ -71,11 +78,14 @@ export async function createParticipant(input: ParticipantFormValues) {
         email: normalizedEmail,
         phone: parsed.phone.trim(),
         address: parsed.address.trim(),
-        birthDate: new Date(parsed.birthDate),
+        birthDate,
       },
     });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       throw new DuplicateParticipantError();
     }
 

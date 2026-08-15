@@ -21,11 +21,40 @@ export const participantSchema = z.object({
     .min(5, "Ingresa una dirección válida.")
     .max(200, "La dirección es demasiado larga."),
   birthDate: z
-    .string({ message: "La fecha de nacimiento es obligatoria." })
-    .trim()
-    .refine((value) => !Number.isNaN(Date.parse(value)), {
-      message: "Ingresa una fecha de nacimiento válida.",
-    }),
+  .string({ message: "La fecha de nacimiento es obligatoria." })
+  .trim()
+  .regex(
+    /^\d{4}-\d{2}-\d{2}$/,
+    "Ingresa una fecha de nacimiento válida.",
+  )
+  .refine((value) => {
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    return (
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day
+    );
+  }, "Ingresa una fecha de nacimiento válida.")
+  .refine((value) => {
+    const [year, month, day] = value.split("-").map(Number);
+    const birthDate = new Date(Date.UTC(year, month - 1, day));
+    const today = new Date();
+
+    let age = today.getUTCFullYear() - birthDate.getUTCFullYear();
+
+    const birthdayNotReached =
+      today.getUTCMonth() < birthDate.getUTCMonth() ||
+      (today.getUTCMonth() === birthDate.getUTCMonth() &&
+        today.getUTCDate() < birthDate.getUTCDate());
+
+    if (birthdayNotReached) {
+      age--;
+    }
+
+    return age >= 18 && age <= 100;
+  }, "Ingresa una fecha de nacimiento válida."),
 });
 
 export type ParticipantFormValues = z.infer<typeof participantSchema>;
