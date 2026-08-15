@@ -16,18 +16,17 @@ interface ParticipantTicketActionProps {
     whatsappUrl: string | null;
   } | null;
   showWhatsApp?: boolean;
+  onTicketGenerated?: (participantId: number, ticket: { id: number; uuid: string; status: TicketStatus; whatsappUrl: string | null }) => void;
 }
 
-export function ParticipantTicketAction({ participantId, phone, ticket, showWhatsApp = true }: ParticipantTicketActionProps) {
+export function ParticipantTicketAction({ participantId, phone, ticket, showWhatsApp = true, onTicketGenerated }: ParticipantTicketActionProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const [localTicket, setLocalTicket] = useState<typeof ticket>(ticket);
 
   const isGenerated = ticket?.status === "GENERATED";
   const isSent = ticket?.status === "SENT";
   const whatsappUrl = ticket?.whatsappUrl ?? null;
-  const hasTicket = Boolean(localTicket?.uuid || ticket?.uuid);
+  const hasTicket = Boolean(ticket?.uuid);
 
   async function handleGenerate() {
     setError(null);
@@ -52,7 +51,8 @@ export function ParticipantTicketAction({ participantId, phone, ticket, showWhat
 
       const payload = await response.json().catch(() => null);
       if (payload?.ticket) {
-        setLocalTicket(payload.ticket);
+        // Inform parent so both desktop and mobile instances update from the same source of truth
+        onTicketGenerated?.(participantId, payload.ticket);
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "Error generando la entrada.");
@@ -75,15 +75,15 @@ export function ParticipantTicketAction({ participantId, phone, ticket, showWhat
   }
 
   async function handleDownload() {
-    if (!localTicket?.uuid) return;
+    if (!ticket?.uuid) return;
     try {
-      const res = await fetch(`/api/tickets/${localTicket.uuid}`);
+      const res = await fetch(`/api/tickets/${ticket.uuid}`);
       if (!res.ok) throw new Error("No se pudo descargar el ticket.");
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${localTicket.uuid}.pdf`;
+      a.download = `${ticket.uuid}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -126,8 +126,8 @@ export function ParticipantTicketAction({ participantId, phone, ticket, showWhat
       {hasTicket ? (
         <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2">
           <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleDownload}>Descargar ticket</Button>
-          { showWhatsApp && (localTicket?.whatsappUrl || ticket?.whatsappUrl) ? (
-            <a href={(localTicket?.whatsappUrl ?? ticket?.whatsappUrl) as string} target="_blank" rel="noreferrer noopener" className="w-full sm:w-auto">
+          { showWhatsApp && (ticket?.whatsappUrl) ? (
+            <a href={(ticket?.whatsappUrl) as string} target="_blank" rel="noreferrer noopener" className="w-full sm:w-auto">
               <Button size="sm" className="w-full sm:w-auto">Enviar WhatsApp</Button>
             </a>
           ) : null}
