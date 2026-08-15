@@ -126,51 +126,6 @@ async function detectWhiteRegions(imageBuffer: Buffer) {
   return { components, scaleX, scaleY, probeWidth, probeHeight };
 }
 
-// function svgTextForName(name: string, width: number, height: number) {
-//   // Start with larger font to better occupy the available name area, then reduce until it fits.
-//   let fontSize = Math.min(72, Math.floor(height * 0.8));
-//   const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-//   // Try progressively smaller sizes; keep a small minimum for very long names
-//   while (fontSize > 8) {
-//     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Arial, Helvetica, sans-serif; font-size: ${fontSize}px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
-//     // Rough width check by character count; using 0.55 multiplier allows slightly larger font sizes
-//     if (name.length * fontSize * 0.55 < width) {
-//       return svg;
-//     }
-//     fontSize -= 2;
-//   }
-
-//   return `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}'><style>.name{font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight:700; fill:#000; }</style><rect width='100%' height='100%' fill='transparent' /><text x='50%' y='75%' text-anchor='middle' dominant-baseline='middle' class='name'>${escape(name)}</text></svg>`;
-// }
-
-function svgTextForName(name: string, width: number, height: number) {
-  const escape = (s: string) =>
-    s
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-
-  return `
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="${width}"
-      height="${height}"
-    >
-      <rect width="100%" height="100%" fill="white"/>
-      <text
-        x="50%"
-        y="75%"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        font-size="50"
-        font-weight="700"
-        fill="black"
-      >${escape(name)}</text>
-    </svg>
-  `;
-}
-
 export async function generateTicketImage(participant: {
   fullName: string;
   email: string;
@@ -219,8 +174,6 @@ export async function generateTicketImage(participant: {
       const size = Math.round(Math.min(origW, origH) * 0.22);
       qrBox = { left: origW - size - 60, top: origH - size - 60, width: size, height: size };
     }
-    // Zona fija del nombre según ticket-template.png
-    const nameBox = { left: 223, top: 611, width: 660, height: 64};
 
     // Generate high-res QR
     const qrPayload = `ticket:${participant.uuid}`;
@@ -233,25 +186,14 @@ export async function generateTicketImage(participant: {
     const qrTop = qrBox.top + Math.round((qrBox.height - qrInner) / 2);
     const qrBufferResized = await sharp(qrPngBuffer).resize(qrInner, qrInner, { fit: "contain" }).png().toBuffer();
 
-    // Generate participant name
-    const nameInnerWidth = Math.round(nameBox.width * 0.96);
-    const nameInnerHeight = Math.round(nameBox.height * 0.90);
 
-    const nameSvg = svgTextForName( //participant.fullName//, 
-      "PRUEBA",nameInnerWidth, nameInnerHeight);
 
-    const namePng = await sharp(Buffer.from(nameSvg))
-    .png()
-    .toBuffer();
 
-    const nameLeft = nameBox.left + Math.round((nameBox.width - nameInnerWidth) / 2);
-    const nameTop = nameBox.top + Math.round((nameBox.height - nameInnerHeight) / 2);
 
     // Composite onto template
     const composed = await sharp(templateBuffer)
       .composite([
         { input: qrBufferResized, left: qrLeft, top: qrTop },
-        { input: namePng, left: nameLeft, top: nameTop },
       ])
       .png()
       .toBuffer();
@@ -262,13 +204,63 @@ export async function generateTicketImage(participant: {
   }
 }
 
-export async function generateTicketPdfFromImage(imageBuffer: Buffer, widthPx: number, heightPx: number) {
+export async function generateTicketPdfFromImage(imageBuffer: Buffer, widthPx: number, heightPx: number, fullName: string) {
   const dataUrl = `data:image/png;base64,${imageBuffer.toString("base64")}`;
   const widthPt = Math.round(widthPx * 0.75);
   const heightPt = Math.round(heightPx * 0.75);
   const orientation = widthPt >= heightPt ? "landscape" : "portrait";
-  const doc = new jsPDF({ unit: "pt", format: [widthPt, heightPt], orientation });
-  doc.addImage(dataUrl, "PNG", 0, 0, widthPt, heightPt);
+  const doc = new jsPDF({
+    unit: "pt",
+    format: [widthPt, heightPt],
+    orientation,
+  });
+
+  // Imagen base del ticket + QR
+  doc.addImage(
+    dataUrl,
+    "PNG",
+    0,
+    0,
+    widthPt,
+    heightPt
+  );
+
+  // --------------------------------------------------
+  // Nombre del participante
+  // --------------------------------------------------
+  // Coordenadas de la zona blanca del template original
+  // 223, 611, 660 x 64 px
+  const nameBox = {left: 223 * 0.75, top: 611 * 0.75, width: 660 * 0.75, height: 64 * 0.75, };
+
+  const centerX = nameBox.left + nameBox.width / 2;
+  const centerY = nameBox.top + nameBox.height / 2;
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(0, 0, 0);
+
+  // Tamaño inicial
+  let fontSize = 26;
+
+  // Reducimos el tamaño si el nombre es demasiado largo
+  while (fontSize > 10) {
+    doc.setFontSize(fontSize);
+
+    const textWidth = doc.getTextWidth(fullName);
+
+    if (textWidth <= nameBox.width * 0.92) {
+      break;
+    }
+
+    fontSize -= 1;
+  }
+
+  doc.setFontSize(fontSize);
+
+  doc.text(fullName, centerX, centerY, {
+    align: "center",
+    baseline: "middle",
+  });
+
   return doc.output("datauristring");
 }
 
