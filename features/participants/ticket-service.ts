@@ -237,7 +237,8 @@ export async function generateTicketImage(participant: {
     const nameInnerWidth = Math.round(nameBox.width * 0.96);
     const nameInnerHeight = Math.round(nameBox.height * 0.90);
 
-    const nameSvg = svgTextForName( participant.fullName, nameInnerWidth, nameInnerHeight);
+    const nameSvg = svgTextForName( //participant.fullName//, 
+      "PRUEBA",nameInnerWidth, nameInnerHeight);
 
     const namePng = await sharp(Buffer.from(nameSvg))
     .png()
