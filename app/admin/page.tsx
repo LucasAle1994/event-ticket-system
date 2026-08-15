@@ -16,17 +16,6 @@ export default async function AdminPage() {
   }
   const participantsRaw = await listParticipants();
 
-  console.log(
-  "PARTICIPANTES:",
-  participantsRaw.map((p) => ({
-    id: p.id,
-    nombre: p.fullName,
-    birthDate: p.birthDate,
-    birthDateTime: p.birthDate?.getTime?.(),
-    createdAt: p.createdAt,
-    createdAtTime: p.createdAt?.getTime?.(),
-  })),
-);
   const participants = participantsRaw.map((p) => ({
     ...p,
     birthDate: formatDateForArgentina(p.birthDate, { dateStyle: "short", timeStyle: undefined }),
