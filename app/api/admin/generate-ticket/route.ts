@@ -57,13 +57,13 @@ export async function POST(request: Request) {
       uuid: ticketUuid,
     });
 
-    const pdfDataUrl = await generateTicketPdfFromImage(imageResultFinal.buffer, imageResultFinal.width, imageResultFinal.height);
+    const pdfDataUrl = await generateTicketPdfFromImage(imageResultFinal.buffer, imageResultFinal.width, imageResultFinal.height, participant.fullName);
 
     const origin = new URL(request.url).origin;
     const ticketUrl = `${origin}/api/tickets/${ticketUuid}`;
     const whatsappMessage = `Hola ${participant.fullName}, tu entrada ha sido generada. Descargala usando este enlace: ${ticketUrl}`;
     const whatsappUrl = buildWhatsAppLink(participant.phone, whatsappMessage);
-    
+
     const ticket = await createTicketForParticipant(participant.id, ticketUuid);
     await setTicketMedia(ticket.id, whatsappUrl, pdfDataUrl);
 
