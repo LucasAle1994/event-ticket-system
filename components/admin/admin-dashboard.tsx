@@ -65,9 +65,9 @@ export default function AdminDashboard({ participants }: { participants: Partici
   }
 
   return (
-    <div>
+    <div className="box-border w-full min-w-0 max-w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-4 border-b border-border">
-        <div className="w-full sm:max-w-[60%]">
+        <div className="w-full sm:max-w-[60%] min-w-0">
           <input
             className="w-full rounded-md border px-3 py-2 text-sm"
             placeholder="🔍 Buscar participante..."
@@ -75,9 +75,8 @@ export default function AdminDashboard({ participants }: { participants: Partici
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <div className="flex-shrink-0 flex items-center gap-2">
+        <div className="flex-shrink-0">
           <Button variant="ghost" size="sm" onClick={() => alert('Escáner próximamente.')}>📷 Escanear ticket</Button>
-          <Button variant="outline" size="sm" onClick={() => { window.location.href = '/admin/logout'; }}>Cerrar sesión</Button>
         </div>
       </div>
 
@@ -87,12 +86,12 @@ export default function AdminDashboard({ participants }: { participants: Partici
             <tr>
               <th className="px-3 py-2 font-medium" style={{ width: '5%' }}>ID</th>
               <th className="px-3 py-2 font-medium" style={{ width: '13%' }}>Nombre</th>
-              <th className="px-3 py-2 font-medium" style={{ width: '17%' }}>Email</th>
+              <th className="px-3 py-2 font-medium" style={{ width: '16%' }}>Email</th>
               <th className="px-3 py-2 font-medium" style={{ width: '12%' }}>Celular</th>
-              <th className="px-3 py-2 font-medium" style={{ width: '14%' }}>Dirección</th>
+              <th className="px-3 py-2 font-medium" style={{ width: '13%' }}>Dirección</th>
               <th className="px-3 py-2 font-medium" style={{ width: '9%' }}>Nacimiento</th>
               <th className="px-3 py-2 font-medium" style={{ width: '12%' }}>Registro</th>
-              <th className="px-3 py-2 font-medium" style={{ width: '20%' }}>Ticket / Acciones</th>
+              <th className="px-3 py-2 font-medium" style={{ width: '19%' }}>Ticket / Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -109,7 +108,7 @@ export default function AdminDashboard({ participants }: { participants: Partici
                 <td className="px-3 py-2" style={{ width: '12%' }}>{participant.createdAt}</td>
                 <td className="px-3 py-2" style={{ width: '20%' }}>
                   <div className="flex flex-col gap-2">
-                    <ParticipantTicketAction participantId={participant.id} phone={participant.phone} ticket={participant.ticket} showWhatsApp={false} />
+                    <ParticipantTicketAction participantId={participant.id} phone={participant.phone} ticket={participant.ticket} showWhatsApp={false} onTicketGenerated={(id, t) => setItems(items.map(i => i.id === id ? { ...i, ticket: t } : i))} />
                     <div>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(participant.id)}>Eliminar</Button>
                     </div>
@@ -122,25 +121,27 @@ export default function AdminDashboard({ participants }: { participants: Partici
       </div>
 
       {/* Mobile: cards */}
-      <div className="block md:hidden space-y-4 px-4 py-3">
+      <div className="box-border block w-full min-w-0 max-w-full space-y-4 px-2 py-3 md:hidden">
         {filtered.map((p) => (
-          <div key={p.id} className="w-full rounded-lg border border-border bg-card p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="text-sm font-semibold">{p.fullName}</div>
-                <div className="text-xs text-muted-foreground">{p.email}</div>
-                <div className="text-xs text-muted-foreground">{p.phone}</div>
+          <div key={p.id}className="box-border w-full min-w-0 max-w-full overflow-hidden rounded-lg border border-border bg-card p-4">
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold truncate">{p.fullName}</div>
+                <div className="text-xs text-muted-foreground truncate">{p.email}</div>
+                <div className="text-xs text-muted-foreground truncate">{p.phone}</div>
               </div>
-              <div className="text-xs text-muted-foreground text-right">ID {p.id}</div>
+              <div className="shrink-0 text-right text-xs text-muted-foreground">
+                ID {p.id}
+              </div>
             </div>
-            <div className="mt-3 text-xs text-muted-foreground">
-              <div className="truncate">📍 {p.address}</div>
-              <div>🎂 {p.birthDate}</div>
-              <div>🕐 {p.createdAt}</div>
+            <div className="mt-3 min-w-0 text-xs text-muted-foreground">
+              <div className="truncate">{p.address}</div>
+              <div>{p.birthDate}</div>
+              <div>{p.createdAt}</div>
             </div>
 
             <div className="mt-4 border-t border-border pt-3 space-y-2">
-              <ParticipantTicketAction participantId={p.id} phone={p.phone} ticket={p.ticket} />
+              <ParticipantTicketAction participantId={p.id} phone={p.phone} ticket={p.ticket} showWhatsApp={false} onTicketGenerated={(id, t) => setItems(items.map(i => i.id === id ? { ...i, ticket: t } : i))} />
               <div className="flex gap-2">
                 <Button variant="ghost" size="sm" className="w-full" onClick={() => handleDelete(p.id)}>Eliminar</Button>
               </div>

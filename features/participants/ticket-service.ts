@@ -10,10 +10,11 @@ import { prisma } from "@/lib/prisma";
 
 export type TicketStatus = "GENERATED" | "SENT";
 
-export async function createTicketForParticipant(participantId: number) {
+export async function createTicketForParticipant(participantId: number, uuid: string) {
   return prisma.ticket.create({
     data: {
       participantId,
+      uuid,
       status: "GENERATED",
     },
   });
@@ -176,7 +177,6 @@ export async function generateTicketImage(participant: {
 
     // Heuristics: QR area is near-square, name area is wide
     let qrBox = null as null | { left: number; top: number; width: number; height: number };
-    let nameBox = null as null | { left: number; top: number; width: number; height: number };
 
     for (const c of scaledComps.sort((a, b) => b.area - a.area)) {
       const w = c.x1 - c.x0 + 1;
@@ -185,9 +185,6 @@ export async function generateTicketImage(participant: {
       if (!qrBox && ar > 0.7 && ar < 1.4 && Math.min(w, h) > Math.min(origW, origH) * 0.08) {
         qrBox = { left: c.x0, top: c.y0, width: w, height: h };
       }
-      if (!nameBox && ar > 2 && w > origW * 0.4) {
-        nameBox = { left: c.x0, top: c.y0, width: w, height: h };
-      }
     }
 
     // Fallback positions if detection failed
@@ -195,9 +192,8 @@ export async function generateTicketImage(participant: {
       const size = Math.round(Math.min(origW, origH) * 0.22);
       qrBox = { left: origW - size - 60, top: origH - size - 60, width: size, height: size };
     }
-    if (!nameBox) {
-      nameBox = { left: 80, top: Math.round(origH * 0.25), width: Math.round(origW * 0.6), height: 60 };
-    }
+    // Zona fija del nombre según ticket-template.png
+    const nameBox = { left: 223, top: 611, width: 660, height: 64};
 
     // Generate high-res QR
     const qrPayload = `ticket:${participant.uuid}`;
@@ -210,14 +206,16 @@ export async function generateTicketImage(participant: {
     const qrTop = qrBox.top + Math.round((qrBox.height - qrInner) / 2);
     const qrBufferResized = await sharp(qrPngBuffer).resize(qrInner, qrInner, { fit: "contain" }).png().toBuffer();
 
-    // Create SVG for name
-    const nameSvg = svgTextForName(participant.fullName, nameBox.width, nameBox.height);
-    // render name into a slightly inset box to avoid touching edges
-    // Increase inner box usage to better fill the name area while keeping safe margins
-    const nameInnerWidth = Math.max(32, Math.round(nameBox.width * 0.98));
-    const nameInnerHeight = Math.max(20, Math.round(nameBox.height * 0.95));
-    const nameSvgAdjusted = svgTextForName(participant.fullName, nameInnerWidth, nameInnerHeight);
-    const namePng = await sharp(Buffer.from(nameSvgAdjusted)).png().toBuffer();
+    // Generate participant name
+    const nameInnerWidth = Math.round(nameBox.width * 0.96);
+    const nameInnerHeight = Math.round(nameBox.height * 0.90);
+
+    const nameSvg = svgTextForName( participant.fullName, nameInnerWidth, nameInnerHeight);
+
+    const namePng = await sharp(Buffer.from(nameSvg))
+    .png()
+    .toBuffer();
+
     const nameLeft = nameBox.left + Math.round((nameBox.width - nameInnerWidth) / 2);
     const nameTop = nameBox.top + Math.round((nameBox.height - nameInnerHeight) / 2);
 

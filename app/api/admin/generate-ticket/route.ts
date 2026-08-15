@@ -44,18 +44,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "El ticket ya fue generado." }, { status: 409 });
     }
 
-    // Generate image + PDF first; only write DB record if generation succeeds
-    const imageResult = await generateTicketImage({
-      fullName: participant.fullName,
-      email: participant.email,
-      phone: participant.phone,
-      address: participant.address,
-      birthDate: participant.birthDate,
-      uuid: crypto.randomUUID(), // temporary uuid to create QR payload
-    });
-
     // Create ticket record now with the real uuid returned by DB
-    const ticket = await createTicketForParticipant(participant.id);
+    const ticketUuid = crypto.randomUUID();
 
     // regenerate image using the ticket uuid so QR matches stored ticket
     const imageResultFinal = await generateTicketImage({
@@ -64,16 +54,17 @@ export async function POST(request: Request) {
       phone: participant.phone,
       address: participant.address,
       birthDate: participant.birthDate,
-      uuid: ticket.uuid,
+      uuid: ticketUuid,
     });
 
     const pdfDataUrl = await generateTicketPdfFromImage(imageResultFinal.buffer, imageResultFinal.width, imageResultFinal.height);
 
     const origin = new URL(request.url).origin;
-    const ticketUrl = `${origin}/api/tickets/${ticket.uuid}`;
+    const ticketUrl = `${origin}/api/tickets/${ticketUuid}`;
     const whatsappMessage = `Hola ${participant.fullName}, tu entrada ha sido generada. Descargala usando este enlace: ${ticketUrl}`;
     const whatsappUrl = buildWhatsAppLink(participant.phone, whatsappMessage);
-
+    
+    const ticket = await createTicketForParticipant(participant.id, ticketUuid);
     await setTicketMedia(ticket.id, whatsappUrl, pdfDataUrl);
 
     // Attempt to send the PNG via WhatsApp Cloud API if configured.
@@ -83,7 +74,8 @@ export async function POST(request: Request) {
       const WH_URL = process.env.WHATSAPP_API_URL; // e.g. https://graph.facebook.com/v17.0
       const WH_PHONE_ID = process.env.WHATSAPP_PHONE_ID; // phone number id
       const WH_TOKEN = process.env.WHATSAPP_TOKEN; // bearer token
-      if (WH_URL && WH_PHONE_ID && WH_TOKEN) {
+      const WHATSAPP_ENABLED = process.env.WHATSAPP_ENABLED === "true";
+      if (WH_URL && WH_PHONE_ID && WH_TOKEN && WHATSAPP_ENABLED) {
         const normalizedPhone = participant.phone.replace(/[^0-9]/g, "");
         const uploadEndpoint = `${WH_URL.replace(/\/$/,"")}/${WH_PHONE_ID}/media`;
 
